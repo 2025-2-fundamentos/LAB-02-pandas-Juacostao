@@ -5,7 +5,7 @@ datos requeridos se encuentran en los archivos `tbl0.tsv`, `tbl1.tsv` y
 librerias de pandas para resolver las preguntas.
 """
 
-
+import pandas as pd
 def pregunta_11():
     """
     Construya una tabla que contenga `c0` y una lista separada por ',' de
@@ -22,3 +22,20 @@ def pregunta_11():
     38   38      d,e
     39   39    a,d,f
     """
+    # Leer el archivo desde la ruta del proyecto
+    df = pd.read_csv("files/input/tbl1.tsv", sep="\t")
+    
+    # Limpiar nombres y valores por si hay espacios
+    df.columns = df.columns.str.strip()
+    df["c4"] = df["c4"].astype(str).str.strip()
+    
+    # Agrupar por c0, ordenar alfabéticamente los valores de c4 y unir con ','
+    resultado = (
+        df.groupby("c0", as_index=False)
+          .agg({"c4": lambda x: ",".join(sorted(x.tolist()))})
+    )
+    
+    # Asegurar orden por c0 y resetear índice para que coincida exactamente con la prueba
+    resultado = resultado.sort_values("c0").reset_index(drop=True)
+    
+    return resultado
